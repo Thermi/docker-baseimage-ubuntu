@@ -40,6 +40,9 @@ LANGUAGE "en_US.UTF-8" \
 LANG "en_US.UTF-8" \
 TERM "xterm"
 
+# For some reason, REL has to be specified here again, otherwise the variable is not set(?!) (Docker version 19.03.12-ce, build 48a66213fe)
+ARG REL=focal
+
 # copy sources
 COPY sources.list /etc/apt/
 RUN \
