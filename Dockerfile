@@ -1,8 +1,8 @@
 FROM alpine:3.9 as rootfs-stage
 
 # environment
-ENV REL=bionic
-ENV ARCH=amd64
+ARG REL=focal
+ENV ARCH amd64
 # install packages
 RUN \
  apk add --no-cache \
@@ -35,16 +35,16 @@ ARG OVERLAY_ARCH="amd64"
 
 # set environment variables
 ARG DEBIAN_FRONTEND="noninteractive"
-ENV HOME="/root" \
-LANGUAGE="en_US.UTF-8" \
-LANG="en_US.UTF-8" \
-TERM="xterm"
+ENV HOME "/root" \
+LANGUAGE "en_US.UTF-8" \
+LANG "en_US.UTF-8" \
+TERM "xterm"
 
 # copy sources
 COPY sources.list /etc/apt/
-
 RUN \
  echo "**** Ripped from Ubuntu Docker Logic ****" && \
+ sed -i s/REPLACEME/${REL}/g /etc/apt/sources.list && \
  set -xe && \
  echo '#!/bin/sh' \
 	> /usr/sbin/policy-rc.d && \
@@ -92,7 +92,7 @@ RUN \
  /tmp/s6-overlay.tar.gz -L \
 	"https://github.com/just-containers/s6-overlay/releases/download/${OVERLAY_VERSION}/s6-overlay-${OVERLAY_ARCH}.tar.gz" && \
  tar xfz \
-	/tmp/s6-overlay.tar.gz -C / && \
+	/tmp/s6-overlay.tar.gz -C / --keep-directory-symlink && \
  echo "**** create abc user and make our folders ****" && \
  useradd -u 911 -U -d /config -s /bin/false abc && \
  usermod -G users abc && \
